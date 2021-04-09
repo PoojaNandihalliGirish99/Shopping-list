@@ -1,0 +1,87 @@
+<html>
+    <head>
+        <title>Your Shopping List</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    </head>
+    <body>
+        <div id="shopping-list">
+            <h1 class="float-start p-3">{{header || 'Welcome'}}</h1>
+            <div class="container">
+                
+                <button v-if="editing" @click="doEdit(false)" class="float-end m-3 btn btn-danger">Cancel</button>
+                <button v-else @click="doEdit(true)" class="btn btn-primary">Add item</button>
+            </div>
+           
+            <div v-if="editing" class="input-group">
+                <input type="text"
+                class="form-control m-5"
+                v-on:keyup.enter="saveItem"
+                v-model="newItem" 
+                placeholder="Add new item">
+                <button 
+                v-on:click="saveItem"
+                v-bind:disabled="newItem.length === 0"
+                class="input-group-text btn btn-primary m-5">Save Item</button>
+            </div>
+            <div class="container">
+            <ul>
+                <li 
+                v-for="item in reversedItems" 
+                @click="togglePurchased(item)"
+                :class="{'text-decoration-line-through' : item.purchased}">
+                    {{item.label}}
+                </li>
+            </ul>
+            </div>
+            <p v-if="items.length === 0">Nice job! You have bought all the items.</p>
+        </div>
+        <script src="https://unpkg.com/vue@next"></script>
+        <script>
+            Vue.createApp({
+                data(){
+                    return{
+                        editing: true,
+                        header: "Shopping List",
+                        newItem:'',
+                        items:[
+                            {
+                                label:"10 party caps",
+                                purchased: false
+                            },
+                            {
+                                label:"2 cold drinks",
+                                purchased: true
+
+                            },
+                            {
+                                label:"Pringles",
+                                purchased: false
+                            },
+                        ],
+                    }
+                },
+                methods:{
+                    saveItem(){
+                        this.items.push({
+                            label:this.newItem,
+                            purchased:false
+                        })
+                        this.newItem=""
+                    },
+                    doEdit(editing){
+                        this.editing = editing
+                        this.newItem=""
+                    },
+                    togglePurchased(item){
+                        item.purchased = !item.purchased
+                    }
+                },
+                computed:{
+                    reversedItems(){
+                        return [...this.items].reverse()
+                    }
+                }
+            }).mount('#shopping-list')
+        </script>
+    </body>
+</html>
